@@ -204,5 +204,5 @@ def scrape_articles(username, password, selected_date, max_articles, progress_ca
     results = fetch_articles(driver, wait, max_articles, progress_callback)
     return results
     
-    finally:
-        driver.quit()
+
+    driver.quit()
