@@ -16,6 +16,7 @@ st.sidebar.markdown("**Enter your credentials to fetch news:**")
 
 # Input fields with consistent styling
 with st.sidebar:
+    st.write("test")
     username = st.text_input("Username", placeholder="Enter your username")
     password = st.text_input("Password", type="password", placeholder="Enter your password")
     selected_date = st.date_input("Select Date", value=date.today(), help="Choose the date to fetch news from")
