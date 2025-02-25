@@ -41,7 +41,7 @@ def setup_driver():
     chrome_options.add_argument("--disable-dev-shm-usage")  # Optimize for container memory
 
     # Use chromium-driver installed via packages.txt on Streamlit Cloud
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager(driver_version="120.0.6099.224").install()),options=chrome_options)
     return driver, WebDriverWait(driver, 10)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
