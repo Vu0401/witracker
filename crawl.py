@@ -32,12 +32,19 @@ def check_date(date_str, curr_date):
 # Function to initialize Chrome driver in headless mode with specific options
 def setup_driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run Chrome without GUI
-    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
-    chrome_options.add_argument("--window-size=1920,1080")  # Set virtual window size
-    chrome_options.add_argument("--log-level=3")  # Suppress non-critical logs
-    chrome_options.add_argument("--silent")  # Further reduce log output
-    # Redirect ChromeDriver logs to null device (OS-specific)
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--log-level=3")
+    chrome_options.add_argument("--silent")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.binary_location = "/usr/bin/chromium"
+    # Chống chặn headless
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option("useAutomationExtension", False)
     
     service = Service()
     driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -49,7 +56,6 @@ def login(driver, wait, username, password, progress_callback=None):
     if progress_callback:
         progress_callback("Navigating to login page...")
     
-    # Tối đa hóa cửa sổ ngay từ đầu
     driver.maximize_window()
     driver.get("https://wichart.vn/login?redirect=%2Fdashboard")
     
@@ -57,11 +63,21 @@ def login(driver, wait, username, password, progress_callback=None):
         progress_callback(f"Current URL: {driver.current_url}")
         progress_callback(f"Page source: {driver.page_source}")
     
-    username_field = wait.until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='text']")),
-        message="Timeout waiting for username input"
-    )
-    username_field.send_keys(username)
+    # Thử đợi lâu hơn hoặc linh hoạt hơn
+    for _ in range(2):  # Thử 2 lần
+        try:
+            username_field = wait.until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='text']")),
+                message="Timeout waiting for username input"
+            )
+            if progress_callback:
+                progress_callback("Username field found!")
+            username_field.send_keys(username)
+            break
+        except:
+            if progress_callback:
+                progress_callback("Retrying to find username field...")
+            time.sleep(10)  # Chờ thêm 10 giây trước khi thử lại
     
     password_field = wait.until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='password']")),
@@ -69,7 +85,7 @@ def login(driver, wait, username, password, progress_callback=None):
     )
     password_field.send_keys(password)
     
-    time.sleep(1)  # Giữ thời gian chờ ngắn trước khi click
+    time.sleep(1)
     submit_button = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")),
         message="Timeout waiting for submit button"
