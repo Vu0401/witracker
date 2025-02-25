@@ -68,7 +68,7 @@ def scroll_to(driver, wait, xpath, attempts=5):
         except:
             # Scroll down 1000px if element not found
             driver.execute_script("window.scrollBy(0, 1000);")
-            time.sleep(1)  # Wait for page to load
+            time.sleep(5)  # Wait for page to load
     return False  # Return False if element not found after attempts
 
 # Function to select a specific date from the calendar
@@ -76,14 +76,14 @@ def pick_date(driver, wait, day, target):
     # Click the calendar button to open date picker
     calendar = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label^='Choose date']")))
     calendar.click()
-    time.sleep(1)  # Wait for calendar to open
+    time.sleep(3)  # Wait for calendar to open
     # Navigate to the target month-year by clicking left arrow
     while driver.find_element(By.CSS_SELECTOR, "div#\\:rv\\:-grid-label").text != target:
         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "svg[data-testid='ArrowLeftIcon']"))).click()
-        time.sleep(1)
+        time.sleep(5)
     # Select the specified day
     wait.until(EC.element_to_be_clickable((By.XPATH, f"//button[contains(@class, 'MuiPickersDay-root') and text()='{day}']"))).click()
-    time.sleep(2)  # Wait for selection to register
+    time.sleep(5)  # Wait for selection to register
 
 # Function to extract article content from the page source
 def extract_article_content(driver):
@@ -104,7 +104,7 @@ def save_article(driver, wait, xpath, count, results):
         return False
     
     wait.until(EC.element_to_be_clickable((By.XPATH, xpath))).click()  # Click article
-    time.sleep(1)  # Wait for content to load
+    time.sleep(5)  # Wait for content to load
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.MuiBox-root div.MuiTypography-body1")))  # Wait for content visibility
     
     text = extract_article_content(driver)
@@ -157,7 +157,7 @@ def fetch_articles(driver, wait, max_articles=None, progress_callback=None):
             more_xpath = "/html/body/div[2]/div[1]/div[3]/div/div/div[3]/button"
             if scroll_to(driver, wait, more_xpath):
                 wait.until(EC.element_to_be_clickable((By.XPATH, more_xpath))).click()
-                time.sleep(2)
+                time.sleep(5)
                 k += 1
             else:
                 if progress_callback:
@@ -192,7 +192,7 @@ def scrape_articles(username, password, selected_date, max_articles, progress_ca
         login(driver, wait, username, password)
         driver.get("https://wichart.vn/news")
         driver.maximize_window()
-        time.sleep(3)
+        time.sleep(5)
 
         pick_date(driver, wait, day, target_month_year)
         results = fetch_articles(driver, wait, max_articles, progress_callback)
