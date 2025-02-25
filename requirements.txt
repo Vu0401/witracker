@@ -1,0 +1,7 @@
+selenium
+crawl4ai 
+html2text
+python-docx
+streamlit
+
+git+https://github.com/Vu0401/zswarm.git
