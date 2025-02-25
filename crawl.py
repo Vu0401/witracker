@@ -40,8 +40,10 @@ def setup_driver():
     chrome_options.add_argument("--no-sandbox")  # Required for cloud environments
     chrome_options.add_argument("--disable-dev-shm-usage")  # Optimize for container memory
 
-    # Use chromium-driver installed via packages.txt on Streamlit Cloud
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager(driver_version="120.0.6099.224").install()),options=chrome_options)
+    # Không chỉ định phiên bản cụ thể, để ChromeDriverManager tự động lấy phiên bản khớp với Chrome hiện tại
+    driver_path = ChromeDriverManager().install()
+    driver = webdriver.Chrome(service=Service(driver_path), options=chrome_options)
+    
     return driver, WebDriverWait(driver, 10)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
