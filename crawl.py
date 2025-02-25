@@ -116,7 +116,7 @@ def pick_date(driver, wait, day, target):
     # Click the calendar button to open date picker
     calendar = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label^='Choose date']")))
     calendar.click()
-    time.sleep(3)  # Wait for calendar to open
+    time.sleep(5)  # Wait for calendar to open
     # Navigate to the target month-year by clicking left arrow
     while driver.find_element(By.CSS_SELECTOR, "div#\\:rv\\:-grid-label").text != target:
         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "svg[data-testid='ArrowLeftIcon']"))).click()
@@ -230,8 +230,8 @@ def scrape_articles(username, password, selected_date, max_articles, progress_ca
 
     login(driver, wait, username, password)
     driver.get("https://wichart.vn/news")
-    driver.maximize_window()
-    time.sleep(3)
+    #driver.maximize_window()
+    time.sleep(10)
 
     pick_date(driver, wait, day, target_month_year)
     results = fetch_articles(driver, wait, max_articles, progress_callback)
