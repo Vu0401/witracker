@@ -200,22 +200,18 @@ def scrape_articles(username, password, selected_date, max_articles, progress_ca
     # Initialize Chrome driver
     driver, wait = setup_driver()
 
-    try:
-        login(driver, wait, username, password)
-        driver.get("https://wichart.vn/news")
-        driver.maximize_window()
-        time.sleep(3)
 
-        pick_date(driver, wait, day, target_month_year)
-        results = fetch_articles(driver, wait, max_articles, progress_callback)
-        return results
+    login(driver, wait, username, password)
+    driver.get("https://wichart.vn/news")
+    driver.maximize_window()
+    time.sleep(3)
 
-    except Exception as e:
-        if progress_callback:
-            progress_callback(f"Error fetching news for {selected_date}: {e}")
-        return None
-    
-    finally:
-        driver.quit()
+    pick_date(driver, wait, day, target_month_year)
+    results = fetch_articles(driver, wait, max_articles, progress_callback)
+    driver.quit()
+    return results
+
+   
+        
 
     
