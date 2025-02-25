@@ -42,8 +42,9 @@ def setup_driver():
 
     # Không chỉ định phiên bản cụ thể, để ChromeDriverManager tự động lấy phiên bản khớp với Chrome hiện tại
     driver_path = ChromeDriverManager().install()
-    driver = webdriver.Chrome(service=Service(driver_path), options=chrome_options)
-    
+    #driver = webdriver.Chrome(service=Service(driver_path), options=chrome_options)
+    service = Service(log_path="nul" if os.name == "nt" else "/dev/null")
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver, WebDriverWait(driver, 10)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
