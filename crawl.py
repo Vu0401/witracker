@@ -194,20 +194,15 @@ def scrape_articles(username, password, selected_date, max_articles, progress_ca
         st.error(f"Lỗi khi khởi tạo trình duyệt: {str(e)}")
         st.info("Streamlit Cloud có thể không hỗ trợ Selenium. Vui lòng chạy ứng dụng này trên máy cục bộ.")
 
-    try:
-        login(driver, wait, username, password)
-        driver.get("https://wichart.vn/news")
-        driver.maximize_window()
-        time.sleep(5)
+    #try:
+    login(driver, wait, username, password)
+    driver.get("https://wichart.vn/news")
+    driver.maximize_window()
+    time.sleep(5)
 
-        pick_date(driver, wait, day, target_month_year)
-        results = fetch_articles(driver, wait, max_articles, progress_callback)
-        return results
-
-    except Exception as e:
-        if progress_callback:
-            progress_callback(f"Error fetching news for {selected_date}: {e}")
-        return None
+    pick_date(driver, wait, day, target_month_year)
+    results = fetch_articles(driver, wait, max_articles, progress_callback)
+    return results
     
     finally:
         driver.quit()
