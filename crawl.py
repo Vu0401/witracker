@@ -186,24 +186,35 @@ def fetch_articles(driver, wait, max_articles=None, progress_callback=None):
     return results
 
 # Main function to scrape articles and return results
-def scrape_articles(username, password, selected_date, max_articles):
-    from datetime import datetime
-    # Giả sử check_date và fetch_articles đã ổn
-    day, target_month_year = check_date(selected_date, datetime.now())
+def scrape_articles(username, password, selected_date, max_articles, progress_callback=None):
+
+
+    # Validate selected date
+    current_date = datetime.now()
+    day, target_month_year = check_date(selected_date, current_date)
     if day is None:
+        if progress_callback:
+            progress_callback("Invalid date selected!")
         return None
 
+    # Initialize Chrome driver
     driver, wait = setup_driver()
+
     try:
         login(driver, wait, username, password)
         driver.get("https://wichart.vn/news")
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))  # Chờ trang news load
+        driver.maximize_window()
+        time.sleep(3)
+
         pick_date(driver, wait, day, target_month_year)
-        results = fetch_articles(driver, wait, max_articles)
+        results = fetch_articles(driver, wait, max_articles, progress_callback)
         return results
+
     except Exception as e:
-        print(f"Error: {e}")
+        if progress_callback:
+            progress_callback(f"Error fetching news for {selected_date}: {e}")
         return None
+    
     finally:
         driver.quit()
 
