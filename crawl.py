@@ -46,13 +46,23 @@ def setup_driver():
 
 # Function to log into the website using provided credentials
 def login(driver, wait, username, password):
+    print("Navigating to login page...")
     driver.get("https://wichart.vn/login?redirect=%2Fdashboard")
-    # Chờ phần tử input với timeout 20 giây, dùng CSS Selector linh hoạt hơn
-    username_field = wait.until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='text']")),
-        message="Timeout waiting for username input"
-    )
-    username_field.send_keys(username)
+    
+    # Kiểm tra URL và nội dung trang
+    print(f"Current URL: {driver.current_url}")
+    print(f"Page source snippet: {driver.page_source[:1000]}")  # In 1000 ký tự đầu
+    
+    try:
+        username_field = wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='text']")),
+            message="Timeout waiting for username input"
+        )
+        print("Username field found!")
+        username_field.send_keys(username)
+    except Exception as e:
+        print(f"Error finding username field: {e}")
+        raise
     
     password_field = wait.until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='password']")),
@@ -66,8 +76,8 @@ def login(driver, wait, username, password):
     )
     submit_button.click()
     
-    # Chờ chuyển hướng để xác nhận login thành công
     wait.until(EC.url_contains("/dashboard"), message="Timeout waiting for dashboard redirect")
+    print("Login successful!")
 
 # Function to scroll to a specific element on the page
 def scroll_to(driver, wait, xpath, attempts=5):
