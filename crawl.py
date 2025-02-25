@@ -32,23 +32,30 @@ def check_date(date_str, curr_date):
 # Function to initialize Chrome driver in headless mode with specific options
 def setup_driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run Chrome without GUI
-    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
-    chrome_options.add_argument("--window-size=1920,1080")  # Set virtual window size
-    chrome_options.add_argument("--log-level=3")  # Suppress non-critical logs
-    chrome_options.add_argument("--silent")  # Further reduce log output
-    chrome_options.add_argument("--no-sandbox")  # Required for cloud environments
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Optimize for container memory
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--log-level=3")
+    chrome_options.add_argument("--silent")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.binary_location = "/usr/bin/chromium"  # Chỉ định Chromium binary
 
-    # Chỉ định đường dẫn đến Chromium binary (nếu cần thiết)
-    chrome_options.binary_location = "/usr/bin/chromium"  # Điều chỉnh nếu đường dẫn khác
-    
-    # Sử dụng ChromeDriver từ hệ thống hoặc ChromeDriverManager
-    service = Service(
-        executable_path="/usr/bin/chromedriver",  # Đường dẫn mặc định trên Streamlit Cloud
-    )
+    # Kiểm tra file trước khi khởi tạo
+    import os
+    chromedriver_path = "/usr/bin/chromedriver"
+    chromium_path = "/usr/bin/chromium"
+    print(f"Checking ChromeDriver at {chromedriver_path}: {os.path.exists(chromedriver_path)}")
+    print(f"Checking Chromium at {chromium_path}: {os.path.exists(chromium_path)}")
+
+    if not os.path.exists(chromedriver_path):
+        raise FileNotFoundError(f"ChromeDriver not found at {chromedriver_path}")
+    if not os.path.exists(chromium_path):
+        raise FileNotFoundError(f"Chromium not found at {chromium_path}")
+
+    service = Service(executable_path=chromedriver_path)  # Không dùng log_path để xem log
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    return driver, WebDriverWait(driver, 10)  # Return driver and wait object
+    return driver, WebDriverWait(driver, 10)
 
 # Function to log into the website using provided credentials
 def login(driver, wait, username, password):
