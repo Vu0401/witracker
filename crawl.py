@@ -37,11 +37,12 @@ def setup_driver():
     chrome_options.add_argument("--window-size=1920,1080")  # Set virtual window size
     chrome_options.add_argument("--log-level=3")  # Suppress non-critical logs
     chrome_options.add_argument("--silent")  # Further reduce log output
-    # Redirect ChromeDriver logs to null device (OS-specific)
-    
-    service = Service(log_path="nul" if os.name == "nt" else "/dev/null")
-    # driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
+    chrome_options.add_argument("--no-sandbox")  # Required for cloud environments
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Optimize for container memory
+
+    # Use chromium-driver installed via packages.txt on Streamlit Cloud
+    service = Service(executable_path="/usr/lib/chromium-browser/chromedriver", log_path="/dev/null")
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver, WebDriverWait(driver, 10)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
