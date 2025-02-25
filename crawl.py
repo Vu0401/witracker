@@ -45,24 +45,23 @@ def setup_driver():
     return driver, WebDriverWait(driver, 30)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
-def login(driver, wait, username, password):
-    print("Navigating to login page...")
+def login(driver, wait, username, password, progress_callback=None):
+    if progress_callback:
+        progress_callback("Navigating to login page...")
+    
+    # Tối đa hóa cửa sổ ngay từ đầu
+    driver.maximize_window()
     driver.get("https://wichart.vn/login?redirect=%2Fdashboard")
     
-    # Kiểm tra URL và nội dung trang
-    print(f"Current URL: {driver.current_url}")
-    print(f"Page source snippet: {driver.page_source[:1000]}")  # In 1000 ký tự đầu
+    if progress_callback:
+        progress_callback(f"Current URL: {driver.current_url}")
+        progress_callback(f"Page source: {driver.page_source}")
     
-    try:
-        username_field = wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='text']")),
-            message="Timeout waiting for username input"
-        )
-        print("Username field found!")
-        username_field.send_keys(username)
-    except Exception as e:
-        print(f"Error finding username field: {e}")
-        raise
+    username_field = wait.until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='text']")),
+        message="Timeout waiting for username input"
+    )
+    username_field.send_keys(username)
     
     password_field = wait.until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='password']")),
@@ -70,6 +69,7 @@ def login(driver, wait, username, password):
     )
     password_field.send_keys(password)
     
+    time.sleep(1)  # Giữ thời gian chờ ngắn trước khi click
     submit_button = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")),
         message="Timeout waiting for submit button"
@@ -77,8 +77,9 @@ def login(driver, wait, username, password):
     submit_button.click()
     
     wait.until(EC.url_contains("/dashboard"), message="Timeout waiting for dashboard redirect")
-    print("Login successful!")
-
+    if progress_callback:
+        progress_callback("Login successful!")
+        
 # Function to scroll to a specific element on the page
 def scroll_to(driver, wait, xpath, attempts=5):
     for _ in range(attempts):  # Try scrolling up to 'attempts' times
