@@ -46,7 +46,6 @@ def setup_driver():
     # Sử dụng ChromeDriver từ hệ thống hoặc ChromeDriverManager
     service = Service(
         executable_path="/usr/bin/chromedriver",  # Đường dẫn mặc định trên Streamlit Cloud
-        log_path="nul" if os.name == "nt" else "/dev/null"
     )
     driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver, WebDriverWait(driver, 10)  # Return driver and wait object
