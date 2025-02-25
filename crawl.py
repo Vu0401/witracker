@@ -30,6 +30,7 @@ def check_date(date_str, curr_date):
         return None, None
 
 # Function to initialize Chrome driver in headless mode with specific options
+@st.cache_resource
 def setup_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Run Chrome without GUI
