@@ -230,7 +230,7 @@ def scrape_articles(username, password, selected_date, max_articles, progress_ca
 
     login(driver, wait, username, password)
     driver.get("https://wichart.vn/news")
-    #driver.maximize_window()
+    driver.maximize_window()
     time.sleep(120)
 
     pick_date(driver, wait, day, target_month_year)
