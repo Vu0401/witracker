@@ -42,19 +42,32 @@ def setup_driver():
     service = Service()
     driver = webdriver.Chrome(service=service, options=chrome_options)
     #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
-    return driver, WebDriverWait(driver, 10)  # Return driver and wait object
+    return driver, WebDriverWait(driver, 30)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
 def login(driver, wait, username, password):
-    driver.get("https://wichart.vn/login?redirect=%2Fdashboard")  # Navigate to login page
-    # Enter username into text field
-    wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='text']"))).send_keys(username)
-    # Enter password into password field
-    wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='password']"))).send_keys(password)
-    # Click submit button to log in
-    wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']"))).click()
-    time.sleep(5)  # Wait for login to complete
-    print("Login Successful!")
+    driver.get("https://wichart.vn/login?redirect=%2Fdashboard")
+    # Chờ phần tử input với timeout 20 giây, dùng CSS Selector linh hoạt hơn
+    username_field = wait.until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='text']")),
+        message="Timeout waiting for username input"
+    )
+    username_field.send_keys(username)
+    
+    password_field = wait.until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='password']")),
+        message="Timeout waiting for password input"
+    )
+    password_field.send_keys(password)
+    
+    submit_button = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")),
+        message="Timeout waiting for submit button"
+    )
+    submit_button.click()
+    
+    # Chờ chuyển hướng để xác nhận login thành công
+    wait.until(EC.url_contains("/dashboard"), message="Timeout waiting for dashboard redirect")
 
 # Function to scroll to a specific element on the page
 def scroll_to(driver, wait, xpath, attempts=5):
@@ -173,37 +186,25 @@ def fetch_articles(driver, wait, max_articles=None, progress_callback=None):
     return results
 
 # Main function to scrape articles and return results
-def scrape_articles(username, password, selected_date, max_articles, progress_callback=None):
+def scrape_articles(username, password, selected_date, max_articles):
     from datetime import datetime
-    import time
-
-    # Validate selected date
-    current_date = datetime.now()
-    day, target_month_year = check_date(selected_date, current_date)
+    # Giả sử check_date và fetch_articles đã ổn
+    day, target_month_year = check_date(selected_date, datetime.now())
     if day is None:
-        if progress_callback:
-            progress_callback("Invalid date selected!")
         return None
 
-    # Initialize Chrome driver
-    #driver, wait = setup_driver()
+    driver, wait = setup_driver()
     try:
-        driver, wait = setup_driver()
-        # các thao tác Selenium của bạn
+        login(driver, wait, username, password)
+        driver.get("https://wichart.vn/news")
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))  # Chờ trang news load
+        pick_date(driver, wait, day, target_month_year)
+        results = fetch_articles(driver, wait, max_articles)
+        return results
     except Exception as e:
-        st.error(f"Lỗi khi khởi tạo trình duyệt: {str(e)}")
-        st.info("Streamlit Cloud có thể không hỗ trợ Selenium. Vui lòng chạy ứng dụng này trên máy cục bộ.")
-
-    #try:
-    login(driver, wait, username, password)
-    driver.get("https://wichart.vn/news")
-    driver.maximize_window()
-    time.sleep(5)
-
-    pick_date(driver, wait, day, target_month_year)
-    results = fetch_articles(driver, wait, max_articles, progress_callback)
-    driver.quit()
-    return results
-    
+        print(f"Error: {e}")
+        return None
+    finally:
+        driver.quit()
 
     
