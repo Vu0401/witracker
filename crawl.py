@@ -42,7 +42,7 @@ def setup_driver():
 
     # Use chromium-driver installed via packages.txt on Streamlit Cloud
     service = Service(executable_path="/usr/lib/chromium-browser/chromedriver", log_path="/dev/null")
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
     return driver, WebDriverWait(driver, 10)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
