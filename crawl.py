@@ -40,10 +40,14 @@ def setup_driver():
     chrome_options.add_argument("--no-sandbox")  # Required for cloud environments
     chrome_options.add_argument("--disable-dev-shm-usage")  # Optimize for container memory
 
-    # Không chỉ định phiên bản cụ thể, để ChromeDriverManager tự động lấy phiên bản khớp với Chrome hiện tại
-    driver_path = ChromeDriverManager().install()
-    #driver = webdriver.Chrome(service=Service(driver_path), options=chrome_options)
-    service = Service(log_path="nul" if os.name == "nt" else "/dev/null")
+    # Chỉ định đường dẫn đến Chromium binary (nếu cần thiết)
+    chrome_options.binary_location = "/usr/bin/chromium"  # Điều chỉnh nếu đường dẫn khác
+    
+    # Sử dụng ChromeDriver từ hệ thống hoặc ChromeDriverManager
+    service = Service(
+        executable_path="/usr/bin/chromedriver",  # Đường dẫn mặc định trên Streamlit Cloud
+        log_path="nul" if os.name == "nt" else "/dev/null"
+    )
     driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver, WebDriverWait(driver, 10)  # Return driver and wait object
 
