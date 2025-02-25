@@ -42,7 +42,7 @@ def setup_driver():
     service = Service()
     driver = webdriver.Chrome(service=service, options=chrome_options)
     #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
-    return driver, WebDriverWait(driver, 30)  # Return driver and wait object
+    return driver, WebDriverWait(driver, 60)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
 def login(driver, wait, username, password, progress_callback=None):
