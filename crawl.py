@@ -186,7 +186,13 @@ def scrape_articles(username, password, selected_date, max_articles, progress_ca
         return None
 
     # Initialize Chrome driver
-    driver, wait = setup_driver()
+    #driver, wait = setup_driver()
+    try:
+        driver, wait = setup_driver()
+        # các thao tác Selenium của bạn
+    except Exception as e:
+        st.error(f"Lỗi khi khởi tạo trình duyệt: {str(e)}")
+        st.info("Streamlit Cloud có thể không hỗ trợ Selenium. Vui lòng chạy ứng dụng này trên máy cục bộ.")
 
     try:
         login(driver, wait, username, password)
