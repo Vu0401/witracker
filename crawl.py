@@ -36,7 +36,7 @@ def setup_driver():
     chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
     chrome_options.add_argument("--window-size=1920,1080")  # Set virtual window size
     chrome_options.add_argument("--log-level=3")  # Suppress non-critical logs
-    chrome_options.add_argument("--silent")  # Further reduce log output
+    #chrome_options.add_argument("--silent")  # Further reduce log output
     # Redirect ChromeDriver logs to null device (OS-specific)
     
     service = Service(log_path="nul" if os.name == "nt" else "/dev/null")
