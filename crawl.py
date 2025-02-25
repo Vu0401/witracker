@@ -34,14 +34,14 @@ def setup_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Run Chrome without GUI
     chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
-    #chrome_options.add_argument("--window-size=1920,1080")  # Set virtual window size
-    #chrome_options.add_argument("--log-level=3")  # Suppress non-critical logs
-    #chrome_options.add_argument("--silent")  # Further reduce log output
+    chrome_options.add_argument("--window-size=1920,1080")  # Set virtual window size
+    chrome_options.add_argument("--log-level=3")  # Suppress non-critical logs
+    chrome_options.add_argument("--silent")  # Further reduce log output
     # Redirect ChromeDriver logs to null device (OS-specific)
     
-    #service = Service(log_path="nul" if os.name == "nt" else "/dev/null")
-    #driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
+    service = Service(log_path="nul" if os.name == "nt" else "/dev/null")
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
     return driver, WebDriverWait(driver, 10)  # Return driver and wait object
 
 # Function to log into the website using provided credentials
